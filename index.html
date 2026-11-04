@@ -28,9 +28,21 @@ section{padding:72px 0;border-top:1px solid var(--sand)}
 
 /* topo */
 .dark{background:var(--ink);color:var(--cream)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+.top{display:flex;justify-content:space-between;align-items:center;padding-top:22px;padding-bottom:22px}
 .brand{font-family:var(--serif);font-size:1.5rem;font-weight:600;text-decoration:none}
 .top a.small{font-size:.95rem;text-decoration:none;border-bottom:1px solid var(--clay);padding-bottom:2px}
+.top-right{display:flex;align-items:center;gap:22px}
+.music{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--cream);border:1px solid rgba(250,246,238,.35);border-radius:999px;padding:7px 14px;font:inherit;font-size:.9rem;cursor:pointer}
+.music:hover{border-color:var(--clay)}
+.music[aria-pressed="true"]{border-color:var(--clay);background:rgba(180,83,46,.18)}
+.music .bars{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+.music .bars i{display:block;width:2px;height:4px;background:currentColor}
+.music[aria-pressed="true"] .bars i{animation:eq .9s ease-in-out infinite alternate}
+.music[aria-pressed="true"] .bars i:nth-child(2){animation-delay:.25s}
+.music[aria-pressed="true"] .bars i:nth-child(3){animation-delay:.5s}
+@keyframes eq{from{height:3px}to{height:12px}}
+@media (prefers-reduced-motion:reduce){.music[aria-pressed="true"] .bars i{animation:none;height:8px}}
+@media (max-width:520px){.top-right{gap:12px}.music{padding:6px 10px;font-size:.82rem}.top a.small{display:none}}
 .hero{padding-top:56px;padding-bottom:0;display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:end}
 .hero-text{padding-bottom:96px;align-self:center}
 .hero-photo{display:block;width:100%;height:auto;max-height:660px;object-fit:cover;object-position:top;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 32%);mask-image:linear-gradient(to right,transparent 0,#000 32%)}
@@ -111,7 +123,12 @@ footer small{color:#BDB5A6}
 <header class="dark">
   <div class="wrap top">
     <a class="brand" href="#">Vithor</a>
-    <a class="small" href="#agendar">Agendar sessão</a>
+    <div class="top-right">
+      <button class="music" id="musicBtn" type="button" aria-pressed="false" aria-label="Ouvir música ambiente">
+        <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicLabel">ouvir música</span>
+      </button>
+      <a class="small" href="#agendar">Agendar sessão</a>
+    </div>
   </div>
   <div class="wrap hero">
     <div class="hero-text">
@@ -242,5 +259,19 @@ footer small{color:#BDB5A6}
   </div>
 </footer>
 
+<audio id="bgAudio" src="musica.mp3" loop preload="none"></audio>
+<script>
+(function(){
+  var a=document.getElementById('bgAudio'),b=document.getElementById('musicBtn'),l=document.getElementById('musicLabel');
+  if(!a||!b)return;
+  a.volume=0.4;
+  function set(on){b.setAttribute('aria-pressed',on?'true':'false');l.textContent=on?'pausar música':'ouvir música';}
+  b.addEventListener('click',function(){
+    if(a.paused){var p=a.play();if(p&&p.then){p.then(function(){set(true)}).catch(function(){set(false)});}else{set(true);}}
+    else{a.pause();set(false);}
+  });
+  a.addEventListener('error',function(){b.style.display='none';});
+})();
+</script>
 </body>
 </html>
